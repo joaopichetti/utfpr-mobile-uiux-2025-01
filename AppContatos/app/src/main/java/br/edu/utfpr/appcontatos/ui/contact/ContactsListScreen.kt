@@ -80,6 +80,16 @@ fun ContactsListScreen(modifier: Modifier = Modifier) {
         }
     }
 
+    val toggleFavorite: (Contact) -> Unit = { contact ->
+        contacts.value = contacts.value.map {
+            if (it.id == contact.id) {
+                it.copy(isFavorite = !it.isFavorite)
+            } else {
+                it
+            }
+        }
+    }
+
     if (isInitialComposition.value) {
         loadContacts()
         isInitialComposition.value = false
@@ -119,7 +129,8 @@ fun ContactsListScreen(modifier: Modifier = Modifier) {
             } else {
                 List(
                     modifier = Modifier.padding(paddingValues),
-                    contacts = contacts.value
+                    contacts = contacts.value,
+                    onFavoritePressed = toggleFavorite
                 )
             }
         }
@@ -280,13 +291,17 @@ fun EptyListPreview() {
 @Composable
 fun List(
     modifier: Modifier = Modifier,
-    contacts: List<Contact>
+    contacts: List<Contact>,
+    onFavoritePressed: (Contact) -> Unit
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize()
     ) {
         items(contacts) { contact ->
-            ContactListItem(contact = contact)
+            ContactListItem(
+                contact = contact,
+                onFavoritePressed = onFavoritePressed
+            )
         }
     }
 }
@@ -296,7 +311,8 @@ fun List(
 fun ListPreview() {
     AppContatosTheme {
         List(
-            contacts = generateContacts()
+            contacts = generateContacts(),
+            onFavoritePressed = {}
         )
     }
 }
@@ -304,9 +320,9 @@ fun ListPreview() {
 @Composable
 fun ContactListItem(
     modifier: Modifier = Modifier,
-    contact: Contact
+    contact: Contact,
+    onFavoritePressed: (Contact) -> Unit
 ) {
-    val isFavorite: MutableState<Boolean> = rememberSaveable { mutableStateOf(contact.isFavorite) }
     ListItem(
         modifier = modifier,
         headlineContent = {
@@ -316,17 +332,17 @@ fun ContactListItem(
         trailingContent = {
             IconButton(
                 onClick = {
-                    isFavorite.value = !isFavorite.value
+                    onFavoritePressed(contact)
                 }
             ) {
                 Icon(
-                    imageVector = if (isFavorite.value) {
+                    imageVector = if (contact.isFavorite) {
                         Icons.Filled.Favorite
                     } else {
                         Icons.Filled.FavoriteBorder
                     },
                     contentDescription = stringResource(R.string.to_favorite),
-                    tint = if (isFavorite.value) {
+                    tint = if (contact.isFavorite) {
                         Color.Red
                     } else {
                         LocalContentColor.current

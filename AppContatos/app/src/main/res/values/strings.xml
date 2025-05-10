@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">AppContatos</string>
+    <string name="contacts">Contatos</string>
+    <string name="loading_contacts">Carregando contatos...</string>
+    <string name="error_loading">Erro ao carregar</string>
+    <string name="wait_and_try_again">Aguarde um momento e tente novamente</string>
+    <string name="try_again">Tentar novamente</string>
+    <string name="no_data">Nada por aqui...</string>
+    <string name="no_data_hint">Você ainda não adicionou nenhum contato.\nAdicione o primeiro utilizando o botão \"Novo contato\"</string>
+    <string name="to_favorite">Favoritar</string>
 </resources>

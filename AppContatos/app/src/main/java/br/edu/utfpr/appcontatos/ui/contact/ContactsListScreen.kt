@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import br.edu.utfpr.appcontatos.R
 import br.edu.utfpr.appcontatos.data.Contact
 import br.edu.utfpr.appcontatos.ui.theme.AppContatosTheme
+import kotlin.random.Random
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -215,19 +216,37 @@ fun List(
 fun ListPreview() {
     AppContatosTheme {
         List(
-            contacts = listOf(
-                Contact(
-                    firstName = "João",
-                    lastName = "Guilherme",
-                    isFavorite = true
-                ),
-                Contact(
-                    firstName = "José",
-                    lastName = "Carlos"
-                )
-            )
+            contacts = generateContacts()
         )
     }
 }
 
+private fun generateContacts(): List<Contact> {
+    val firstNames = listOf(
+        "João", "José", "Everton", "Marcos", "André", "Anderson", "Antônio",
+        "Laura", "Ana", "Maria", "Joaquina", "Suelen", "Samuel"
+    )
+    val lastNames = listOf(
+        "Do Carmo", "Oliveira", "Dos Santos", "Da Silva", "Brasil", "Pichetti",
+        "Cordeiro", "Silveira", "Andrades", "Cardoso", "Souza"
+    )
+    val contacts: MutableList<Contact> = mutableListOf()
+    for (i in 0..19) {
+        var generatedNewContact = false
+        while (!generatedNewContact) {
+            val firstNameIndex = Random.nextInt(firstNames.size)
+            val lastNameIndex = Random.nextInt(lastNames.size)
+            val newContact = Contact(
+                id = i + 1,
+                firstName = firstNames[firstNameIndex],
+                lastName = lastNames[lastNameIndex]
+            )
+            if (!contacts.any { it.fullName == newContact.fullName }) {
+                contacts.add(newContact)
+                generatedNewContact = true
+            }
+        }
+    }
+    return contacts
+}
 

@@ -23,6 +23,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -176,7 +178,7 @@ fun List(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         contacts.forEach { contact ->
-            var isFavorite = contact.isFavorite
+            val isFavorite: MutableState<Boolean> = mutableStateOf(contact.isFavorite)
             ListItem(
                 headlineContent = {
                     Text(contact.fullName)
@@ -185,17 +187,17 @@ fun List(
                 trailingContent = {
                     IconButton(
                         onClick = {
-                            isFavorite = !isFavorite
+                            isFavorite.value = !isFavorite.value
                         }
                     ) {
                         Icon(
-                            imageVector = if (isFavorite) {
+                            imageVector = if (isFavorite.value) {
                                 Icons.Filled.Favorite
                             } else {
                                 Icons.Filled.FavoriteBorder
                             },
                             contentDescription = stringResource(R.string.to_favorite),
-                            tint = if (isFavorite) {
+                            tint = if (isFavorite.value) {
                                 Color.Red
                             } else {
                                 LocalContentColor.current

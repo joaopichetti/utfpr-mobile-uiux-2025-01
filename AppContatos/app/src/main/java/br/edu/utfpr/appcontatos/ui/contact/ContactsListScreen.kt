@@ -29,11 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -41,75 +36,31 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import br.edu.utfpr.appcontatos.R
 import br.edu.utfpr.appcontatos.data.Contact
 import br.edu.utfpr.appcontatos.data.groupByInitial
 import br.edu.utfpr.appcontatos.ui.contact.composables.ContactAvatar
 import br.edu.utfpr.appcontatos.ui.contact.composables.FavoriteIconButton
 import br.edu.utfpr.appcontatos.ui.theme.AppContatosTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 @Composable
-fun ContactsListScreen(modifier: Modifier = Modifier) {
-    var isInitialComposition: Boolean by rememberSaveable { mutableStateOf(true) }
-    var uiState: ContactsListUiState by rememberSaveable {
-        mutableStateOf(ContactsListUiState())
-    }
-
-    val coroutineScope: CoroutineScope = rememberCoroutineScope()
-
-    val loadContacts: () -> Unit = {
-        uiState = uiState.copy(
-            isLoading = true,
-            hasError = false
-        )
-        coroutineScope.launch {
-            delay(2000)
-            uiState = uiState.copy(
-                contacts = generateContacts().groupByInitial(),
-                isLoading = false
-            )
-        }
-    }
-
-    val toggleFavorite: (Contact) -> Unit = { pressedContact ->
-        val newMap: MutableMap<String, List<Contact>> = mutableMapOf()
-        uiState.contacts.keys.forEach { key ->
-            val contactsOfKey: List<Contact> = uiState.contacts[key]!!
-            val newContacts = contactsOfKey.map { contact ->
-                if (contact.id == pressedContact.id) {
-                    contact.copy(isFavorite = !contact.isFavorite)
-                } else {
-                    contact
-                }
-            }
-            newMap[key] = newContacts
-        }
-        uiState = uiState.copy(
-            contacts = newMap.toMap()
-        )
-    }
-
-    if (isInitialComposition) {
-        loadContacts()
-        isInitialComposition = false
-    }
-
-    if (uiState.isLoading) {
+fun ContactsListScreen(
+    modifier: Modifier = Modifier,
+    viewModel: ContactsListViewModel = viewModel()
+) {
+    if (viewModel.uiState.isLoading) {
         LoadingContent()
-    } else if (uiState.hasError) {
+    } else if (viewModel.uiState.hasError) {
         ErrorContent(
-            onTryAgainPressed = loadContacts
+            onTryAgainPressed = viewModel::loadContacts
         )
     } else {
         Scaffold(
             modifier = modifier.fillMaxSize(),
             topBar = {
                 AppBar(
-                    onRefreshPressed = loadContacts
+                    onRefreshPressed = viewModel::loadContacts
                 )
              },
             floatingActionButton = {
@@ -123,15 +74,15 @@ fun ContactsListScreen(modifier: Modifier = Modifier) {
                 }
             }
         ) { paddingValues ->
-            if (uiState.contacts.isEmpty()) {
+            if (viewModel.uiState.contacts.isEmpty()) {
                 EmptyList(
                     modifier = Modifier.padding(paddingValues)
                 )
             } else {
                 List(
                     modifier = Modifier.padding(paddingValues),
-                    contacts = uiState.contacts,
-                    onFavoritePressed = toggleFavorite
+                    contacts = viewModel.uiState.contacts,
+                    onFavoritePressed = viewModel::toggleFavorite
                 )
             }
         }
@@ -361,33 +312,3 @@ fun ContactListItem(
         }
     )
 }
-
-private fun generateContacts(): List<Contact> {
-    val firstNames = listOf(
-        "João", "José", "Everton", "Marcos", "André", "Anderson", "Antônio",
-        "Laura", "Ana", "Maria", "Joaquina", "Suelen", "Samuel"
-    )
-    val lastNames = listOf(
-        "Do Carmo", "Oliveira", "Dos Santos", "Da Silva", "Brasil", "Pichetti",
-        "Cordeiro", "Silveira", "Andrades", "Cardoso", "Souza"
-    )
-    val contacts: MutableList<Contact> = mutableListOf()
-    for (i in 0..19) {
-        var generatedNewContact = false
-        while (!generatedNewContact) {
-            val firstNameIndex = Random.nextInt(firstNames.size)
-            val lastNameIndex = Random.nextInt(lastNames.size)
-            val newContact = Contact(
-                id = i + 1,
-                firstName = firstNames[firstNameIndex],
-                lastName = lastNames[lastNameIndex]
-            )
-            if (!contacts.any { it.fullName == newContact.fullName }) {
-                contacts.add(newContact)
-                generatedNewContact = true
-            }
-        }
-    }
-    return contacts
-}
-

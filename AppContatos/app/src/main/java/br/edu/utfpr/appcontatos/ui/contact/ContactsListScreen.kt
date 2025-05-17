@@ -15,8 +15,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CloudOff
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedButton
@@ -25,7 +23,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -38,7 +35,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -48,6 +44,7 @@ import br.edu.utfpr.appcontatos.R
 import br.edu.utfpr.appcontatos.data.Contact
 import br.edu.utfpr.appcontatos.data.groupByInitial
 import br.edu.utfpr.appcontatos.ui.contact.composables.ContactAvatar
+import br.edu.utfpr.appcontatos.ui.contact.composables.FavoriteIconButton
 import br.edu.utfpr.appcontatos.ui.theme.AppContatosTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -363,25 +360,10 @@ fun ContactListItem(
             )
         },
         trailingContent = {
-            IconButton(
-                onClick = {
-                    onFavoritePressed(contact)
-                }
-            ) {
-                Icon(
-                    imageVector = if (contact.isFavorite) {
-                        Icons.Filled.Favorite
-                    } else {
-                        Icons.Filled.FavoriteBorder
-                    },
-                    contentDescription = stringResource(R.string.to_favorite),
-                    tint = if (contact.isFavorite) {
-                        Color.Red
-                    } else {
-                        LocalContentColor.current
-                    }
-                )
-            }
+            FavoriteIconButton(
+                isFavorite = contact.isFavorite,
+                onPressed = { onFavoritePressed(contact) }
+            )
         }
     )
 }

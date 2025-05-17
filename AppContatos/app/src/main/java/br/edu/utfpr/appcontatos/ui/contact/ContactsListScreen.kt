@@ -1,7 +1,9 @@
 package br.edu.utfpr.appcontatos.ui.contact
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,6 +46,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.edu.utfpr.appcontatos.R
 import br.edu.utfpr.appcontatos.data.Contact
+import br.edu.utfpr.appcontatos.data.groupByInitial
 import br.edu.utfpr.appcontatos.ui.contact.composables.ContactAvatar
 import br.edu.utfpr.appcontatos.ui.theme.AppContatosTheme
 import kotlinx.coroutines.CoroutineScope
@@ -55,8 +58,10 @@ import kotlin.random.Random
 fun ContactsListScreen(modifier: Modifier = Modifier) {
     val isInitialComposition: MutableState<Boolean> = rememberSaveable { mutableStateOf(true) }
     val isLoading: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) }
-    var hasError: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) }
-    val contacts: MutableState<List<Contact>> = rememberSaveable { mutableStateOf(listOf()) }
+    val hasError: MutableState<Boolean> = rememberSaveable { mutableStateOf(false) }
+    val contacts: MutableState<Map<String, List<Contact>>> = rememberSaveable {
+        mutableStateOf(mapOf())
+    }
 
     val coroutineScope: CoroutineScope = rememberCoroutineScope()
 
@@ -71,9 +76,9 @@ fun ContactsListScreen(modifier: Modifier = Modifier) {
             if (!hasError.value) {
                 val isEmptyList = Random.nextBoolean()
                 if (isEmptyList) {
-                    contacts.value = listOf()
+                    contacts.value = mapOf()
                 } else {
-                    contacts.value = generateContacts()
+                    contacts.value = generateContacts().groupByInitial()
                 }
             }
 
@@ -81,14 +86,20 @@ fun ContactsListScreen(modifier: Modifier = Modifier) {
         }
     }
 
-    val toggleFavorite: (Contact) -> Unit = { contact ->
-        contacts.value = contacts.value.map {
-            if (it.id == contact.id) {
-                it.copy(isFavorite = !it.isFavorite)
-            } else {
-                it
+    val toggleFavorite: (Contact) -> Unit = { pressedContact ->
+        val newMap: MutableMap<String, List<Contact>> = mutableMapOf()
+        contacts.value.keys.forEach { key ->
+            val contactsOfKey: List<Contact> = contacts.value[key]!!
+            val newContacts = contactsOfKey.map { contact ->
+                if (contact.id == pressedContact.id) {
+                    contact.copy(isFavorite = !contact.isFavorite)
+                } else {
+                    contact
+                }
             }
+            newMap[key] = newContacts
         }
+        contacts.value = newMap.toMap()
     }
 
     if (isInitialComposition.value) {
@@ -112,9 +123,7 @@ fun ContactsListScreen(modifier: Modifier = Modifier) {
              },
             floatingActionButton = {
                 FloatingActionButton(
-                    onClick = {
-                        contacts.value = contacts.value.plus(Contact(firstName = "Teste"))
-                    }
+                    onClick = {}
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Add,
@@ -292,17 +301,35 @@ fun EptyListPreview() {
 @Composable
 fun List(
     modifier: Modifier = Modifier,
-    contacts: List<Contact>,
+    contacts: Map<String, List<Contact>>,
     onFavoritePressed: (Contact) -> Unit
 ) {
     LazyColumn(
         modifier = modifier.fillMaxSize()
     ) {
-        items(contacts) { contact ->
-            ContactListItem(
-                contact = contact,
-                onFavoritePressed = onFavoritePressed
-            )
+        contacts.forEach { (initial, contacts) ->
+            stickyHeader {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = MaterialTheme.colorScheme.secondaryContainer)
+                ) {
+                    Text(
+                        text = initial,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                            .padding(start = 16.dp),
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+            }
+            items(contacts) { contact ->
+                ContactListItem(
+                    contact = contact,
+                    onFavoritePressed = onFavoritePressed
+                )
+            }
         }
     }
 }
@@ -312,7 +339,7 @@ fun List(
 fun ListPreview() {
     AppContatosTheme {
         List(
-            contacts = generateContacts(),
+            contacts = generateContacts().groupByInitial(),
             onFavoritePressed = {}
         )
     }

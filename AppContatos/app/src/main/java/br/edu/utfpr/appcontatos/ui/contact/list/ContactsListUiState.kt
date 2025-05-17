@@ -1,4 +1,4 @@
-package br.edu.utfpr.appcontatos.ui.contact
+package br.edu.utfpr.appcontatos.ui.contact.list
 
 import br.edu.utfpr.appcontatos.data.Contact
 

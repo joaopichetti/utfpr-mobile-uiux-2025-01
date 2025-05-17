@@ -1,4 +1,4 @@
-package br.edu.utfpr.appcontatos.ui.contact
+package br.edu.utfpr.appcontatos.ui.contact.list
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

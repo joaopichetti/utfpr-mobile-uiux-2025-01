@@ -44,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.edu.utfpr.appcontatos.R
 import br.edu.utfpr.appcontatos.data.Contact
+import br.edu.utfpr.appcontatos.ui.contact.composables.ContactAvatar
 import br.edu.utfpr.appcontatos.ui.theme.AppContatosTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -328,7 +329,12 @@ fun ContactListItem(
         headlineContent = {
             Text(contact.fullName)
         },
-        leadingContent = {},
+        leadingContent = {
+            ContactAvatar(
+                firstName = contact.firstName,
+                lastName = contact.lastName
+            )
+        },
         trailingContent = {
             IconButton(
                 onClick = {

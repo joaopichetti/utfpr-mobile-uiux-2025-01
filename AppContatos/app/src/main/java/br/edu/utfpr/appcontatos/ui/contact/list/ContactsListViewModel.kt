@@ -6,14 +6,15 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.edu.utfpr.appcontatos.data.Contact
+import br.edu.utfpr.appcontatos.data.ContactDatasource
 import br.edu.utfpr.appcontatos.data.groupByInitial
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.random.Random
 
 class ContactsListViewModel : ViewModel() {
     var uiState: ContactsListUiState by mutableStateOf(ContactsListUiState())
         private set
+    private val datasource: ContactDatasource = ContactDatasource.instance
 
     init {
         loadContacts()
@@ -27,7 +28,7 @@ class ContactsListViewModel : ViewModel() {
         viewModelScope.launch {
             delay(2000)
             uiState = uiState.copy(
-                contacts = generateContacts().groupByInitial(),
+                contacts = datasource.findAll().groupByInitial(),
                 isLoading = false
             )
         }
@@ -50,33 +51,4 @@ class ContactsListViewModel : ViewModel() {
             contacts = newMap.toMap()
         )
     }
-}
-
-fun generateContacts(): List<Contact> {
-    val firstNames = listOf(
-        "João", "José", "Everton", "Marcos", "André", "Anderson", "Antônio",
-        "Laura", "Ana", "Maria", "Joaquina", "Suelen", "Samuel"
-    )
-    val lastNames = listOf(
-        "Do Carmo", "Oliveira", "Dos Santos", "Da Silva", "Brasil", "Pichetti",
-        "Cordeiro", "Silveira", "Andrades", "Cardoso", "Souza"
-    )
-    val contacts: MutableList<Contact> = mutableListOf()
-    for (i in 0..19) {
-        var generatedNewContact = false
-        while (!generatedNewContact) {
-            val firstNameIndex = Random.nextInt(firstNames.size)
-            val lastNameIndex = Random.nextInt(lastNames.size)
-            val newContact = Contact(
-                id = i + 1,
-                firstName = firstNames[firstNameIndex],
-                lastName = lastNames[lastNameIndex]
-            )
-            if (!contacts.any { it.fullName == newContact.fullName }) {
-                contacts.add(newContact)
-                generatedNewContact = true
-            }
-        }
-    }
-    return contacts
 }

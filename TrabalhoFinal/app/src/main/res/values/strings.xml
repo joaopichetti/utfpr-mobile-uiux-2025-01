@@ -1,0 +1,37 @@
+<resources>
+    <string name="app_name">Trabalho Final</string>
+    <string name="carregando">Carregando</string>
+    <string name="erro_ao_carregar">Erro ao carregar</string>
+    <string name="aguarde_um_momento_e_tente_novamente">Ocorreu um erro ao carregar. Aguarde um momento e tente novamente.</string>
+    <string name="tentar_novamente">Tentar novamente</string>
+    <string name="adicionar">Adicionar</string>
+    <string name="lancamentos">Lançamentos</string>
+    <string name="atualizar">Atualizar</string>
+    <string name="saldo">Saldo</string>
+    <string name="previsao">Previsão</string>
+    <string name="descricao_obrigatoria">A descrição é obrigatória</string>
+    <string name="novo_lancamento">Novo lançamento</string>
+    <string name="editar_lancamento">Editar lançamento</string>
+    <string name="voltar">Voltar</string>
+    <string name="excluir">Excluir</string>
+    <string name="salvar">Salvar</string>
+    <string name="descricao">Descrição</string>
+    <string name="data">Data</string>
+    <string name="valor">Valor</string>
+    <string name="paga">Paga</string>
+    <string name="tipo">Tipo</string>
+    <string name="erro_ao_salvar">Ocorreu um erro ao salvar. Aguarde um momento e tente novamente.</string>
+    <string name="erro_ao_excluir">Ocorreu um erro ao excluir. Aguarde um momento e tente novamente.</string>
+    <string name="lista_vazia_title">Nenhum lançamento cadastrado</string>
+    <string name="lista_vazia_subtitle">Cadastre o primeiro através do botão \"+\"</string>
+    <string name="ok">OK</string>
+    <string name="selecione_a_data">Selecione a data</string>
+    <string name="despesa">Despesa</string>
+    <string name="receita">Receita</string>
+    <string name="confirmar">Confirmar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="atencao">Atenção</string>
+    <string name="mensagem_confirmacao_remover_lancamento">Esse registro será removido permanentemente</string>
+    <string name="valor_invalido">Informe um valor válido</string>
+    <string name="valor_obrigatorio">O valor é obrigatório</string>
+</resources>

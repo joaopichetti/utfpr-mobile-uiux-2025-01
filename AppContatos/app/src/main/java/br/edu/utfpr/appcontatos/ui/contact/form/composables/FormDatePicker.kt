@@ -86,7 +86,7 @@ fun FormDatePicker(
 
 @Preview(showBackground = true)
 @Composable
-fun FormDatePickerPreview() {
+private fun FormDatePickerPreview() {
     AppContatosTheme {
         var value by remember { mutableStateOf(LocalDate.now()) }
         FormDatePicker(

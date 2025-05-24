@@ -17,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import br.edu.utfpr.appcontatos.data.Contact
 import br.edu.utfpr.appcontatos.ui.theme.AppContatosTheme
+import br.edu.utfpr.appcontatos.utils.toFormattedPhone
 
 @Composable
 fun CardContactInfo(
@@ -39,7 +40,7 @@ fun CardContactInfo(
         )
         ContactInfo(
             imageVector = Icons.Outlined.Phone,
-            value = contact.phoneNumber.ifBlank {
+            value = contact.phoneNumber.toFormattedPhone().ifBlank {
                 "Adicionar número de telefone"
             },
             enabled = enabled && contact.phoneNumber.isBlank(),

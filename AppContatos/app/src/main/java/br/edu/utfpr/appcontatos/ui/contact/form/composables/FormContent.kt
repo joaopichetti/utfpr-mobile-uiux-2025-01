@@ -24,6 +24,7 @@ import br.edu.utfpr.appcontatos.data.ContactTypeEnum
 import br.edu.utfpr.appcontatos.ui.contact.composables.ContactAvatar
 import br.edu.utfpr.appcontatos.ui.contact.form.FormState
 import br.edu.utfpr.appcontatos.ui.theme.AppContatosTheme
+import br.edu.utfpr.appcontatos.ui.utils.visualtransformation.PhoneVisualTransformation
 import java.time.LocalDate
 
 @Composable
@@ -91,7 +92,8 @@ fun FormContent(
                 onValueChanged = onPhoneChanged,
                 label = "Telefone",
                 keyboardType = KeyboardType.Phone,
-                enabled = !isSaving
+                enabled = !isSaving,
+                visualTransformation = PhoneVisualTransformation()
             )
         }
         FormFieldRow(

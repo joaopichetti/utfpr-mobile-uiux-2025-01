@@ -10,6 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import br.edu.utfpr.appcontatos.ui.contact.details.ContactDetailsScreen
+import br.edu.utfpr.appcontatos.ui.contact.form.ContactFormScreen
 import br.edu.utfpr.appcontatos.ui.contact.list.ContactsListScreen
 
 @Composable
@@ -24,7 +25,9 @@ fun AppContacts(
     ) {
         composable(route = "list") {
             ContactsListScreen(
-                onAddPressed = {},
+                onAddPressed = {
+                    navController.navigate("form")
+                },
                 onContactPressed = { contact ->
                     navController.navigate("details/${contact.id}")
                 }
@@ -37,13 +40,34 @@ fun AppContacts(
                     type = NavType.IntType
                 }
             )
-        ) {
+        ) { navBackStackEntry ->
+            val contactId: Int = navBackStackEntry.arguments?.getInt("id") ?: 0
             ContactDetailsScreen(
                 onBackPressed = {
                     navController.popBackStack()
                 },
-                onEditPressed = {},
+                onEditPressed = {
+                    navController.navigate("form?id=${contactId}")
+                },
                 onContactDeleted = {
+                    navigateToList(navController)
+                }
+            )
+        }
+        composable(
+            route = "form?id={id}",
+            arguments = listOf(
+                navArgument(name = "id") {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )
+        ) {
+            ContactFormScreen(
+                onBackPressed = {
+                    navController.popBackStack()
+                },
+                onContactSaved = {
                     navigateToList(navController)
                 }
             )

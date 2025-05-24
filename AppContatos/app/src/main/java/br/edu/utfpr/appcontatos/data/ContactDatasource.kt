@@ -10,9 +10,22 @@ class ContactDatasource private constructor() {
     }
 
     private val contacts: MutableList<Contact> = mutableListOf()
+    private val contactsObservers: MutableList<ContactsObserver> = mutableListOf()
 
     init {
         contacts.addAll(generateContacts())
+    }
+
+    fun registerObserver(contactsObserver: ContactsObserver) {
+        contactsObservers.add(contactsObserver)
+    }
+
+    fun unregisterObserver(contactsObserver: ContactsObserver) {
+        contactsObservers.remove(contactsObserver)
+    }
+
+    private fun notifyObservers() {
+        contactsObservers.forEach { it.onUpdate(findAll()) }
     }
 
     fun findAll(): List<Contact> {
@@ -28,6 +41,7 @@ class ContactDatasource private constructor() {
             // atualizar
             val index: Int = contacts.indexOfFirst { it.id == contact.id }
             contacts[index] = contact
+            notifyObservers()
             return contact
         } else {
             // inserir
@@ -35,6 +49,7 @@ class ContactDatasource private constructor() {
             val maxId: Int = contactWithMaxId.id
             val contactWithNewId: Contact = contact.copy(id = maxId + 1)
             contacts.add(contactWithNewId)
+            notifyObservers()
             return contactWithNewId
         }
     }
@@ -42,6 +57,7 @@ class ContactDatasource private constructor() {
     fun delete(id: Int) {
         if (id > 0) {
             contacts.removeIf { it.id == id }
+            notifyObservers()
         }
     }
 }

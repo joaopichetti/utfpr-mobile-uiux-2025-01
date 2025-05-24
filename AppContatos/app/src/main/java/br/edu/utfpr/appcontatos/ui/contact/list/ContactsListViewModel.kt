@@ -7,17 +7,24 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.edu.utfpr.appcontatos.data.Contact
 import br.edu.utfpr.appcontatos.data.ContactDatasource
+import br.edu.utfpr.appcontatos.data.ContactsObserver
 import br.edu.utfpr.appcontatos.data.groupByInitial
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class ContactsListViewModel : ViewModel() {
+class ContactsListViewModel : ViewModel(), ContactsObserver {
     var uiState: ContactsListUiState by mutableStateOf(ContactsListUiState())
         private set
     private val datasource: ContactDatasource = ContactDatasource.instance
 
     init {
+        datasource.registerObserver(this)
         loadContacts()
+    }
+
+    override fun onCleared() {
+        datasource.unregisterObserver(this)
+        super.onCleared()
     }
 
     fun loadContacts() {
@@ -35,20 +42,11 @@ class ContactsListViewModel : ViewModel() {
     }
 
     fun toggleFavorite(pressedContact: Contact) {
-        val newMap: MutableMap<String, List<Contact>> = mutableMapOf()
-        uiState.contacts.keys.forEach { key ->
-            val contactsOfKey: List<Contact> = uiState.contacts[key]!!
-            val newContacts = contactsOfKey.map { contact ->
-                if (contact.id == pressedContact.id) {
-                    contact.copy(isFavorite = !contact.isFavorite)
-                } else {
-                    contact
-                }
-            }
-            newMap[key] = newContacts
-        }
-        uiState = uiState.copy(
-            contacts = newMap.toMap()
-        )
+        val updatedContact = pressedContact.copy(isFavorite = !pressedContact.isFavorite)
+        datasource.save(updatedContact)
+    }
+
+    override fun onUpdate(updatedContacts: List<Contact>) {
+        uiState = uiState.copy(contacts = updatedContacts.groupByInitial())
     }
 }
